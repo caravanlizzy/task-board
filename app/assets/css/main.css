@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --color-anthrazit: #1a1a1a;
+  --color-anthrazit-light: #262626;
+}
+

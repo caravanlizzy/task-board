@@ -1,7 +1,7 @@
-const Database = require('better-sqlite3');
-const { Pool } = require('pg');
-const path = require('path');
-const fs = require('fs');
+import Database from 'better-sqlite3';
+import { Pool } from 'pg';
+import path from 'path';
+import fs from 'fs';
 
 let db;
 let usePostgres = !!process.env.DATABASE_URL;
@@ -42,7 +42,7 @@ if (usePostgres) {
   `);
 }
 
-module.exports = {
+export default {
   getTasks: async () => {
     if (usePostgres) {
       const { rows } = await db.query('SELECT * FROM tasks ORDER BY id DESC');

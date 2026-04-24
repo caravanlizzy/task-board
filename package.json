@@ -1,19 +1,22 @@
 {
-  "name": "task-board",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "nuxt-task-board",
+  "type": "module",
   "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
   "dependencies": {
-    "better-sqlite3": "^12.8.0",
-    "body-parser": "^2.2.2",
-    "express": "^5.2.1",
-    "htmx.org": "^2.0.8",
-    "morgan": "^1.10.1",
-    "pg": "^8.20.0"
+    "@nuxt/ui": "^4.6.1",
+    "better-sqlite3": "^12.9.0",
+    "nuxt": "^4.4.2",
+    "pg": "^8.20.0",
+    "tailwindcss": "^4.2.4",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4",
+    "vuedraggable": "^4.1.0"
   }
 }
