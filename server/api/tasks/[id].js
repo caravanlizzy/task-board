@@ -17,14 +17,23 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'PUT' || method === 'PATCH') {
     const body = await readBody(event);
-    const { title, description, priority, status } = body;
-    const updatedTask = await db.updateTask(id, title, description, priority, status);
-    if (!updatedTask) {
+    const existingTask = await db.getTaskById(id);
+    
+    if (!existingTask) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Task not found',
       });
     }
+
+    const { 
+      title = existingTask.title, 
+      description = existingTask.description, 
+      priority = existingTask.priority, 
+      status = existingTask.status 
+    } = body;
+    
+    const updatedTask = await db.updateTask(id, title, description, priority, status);
     return updatedTask;
   }
 

@@ -74,7 +74,7 @@ const deleteTask = async (id) => {
 const updateStatus = async (task, newStatus) => {
   await $fetch(`/api/tasks/${task.id}`, {
     method: 'PATCH',
-    body: { ...task, status: newStatus }
+    body: { status: newStatus }
   });
   refresh();
 };
@@ -82,13 +82,12 @@ const updateStatus = async (task, newStatus) => {
 const onDragChange = async (event, newStatus) => {
   if (event.added) {
     const task = event.added.element;
-    // We don't call refresh() here to avoid flickering, 
-    // the local board is already updated by vuedraggable.
-    // But we update the backend.
     await $fetch(`/api/tasks/${task.id}`, {
       method: 'PATCH',
-      body: { ...task, status: newStatus }
+      body: { status: newStatus }
     });
+    // Update local task status to match backend
+    task.status = newStatus;
   }
 };
 
@@ -126,7 +125,7 @@ const getPriorityColor = (priority) => {
           </div>
 
           <draggable
-            :list="board[status]"
+            v-model="board[status]"
             group="tasks"
             item-key="id"
             class="flex flex-col gap-4 min-h-[400px] bg-gray-50 dark:bg-anthrazit-light p-3 rounded-lg border border-gray-200 dark:border-gray-800"
