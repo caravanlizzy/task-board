@@ -91,12 +91,32 @@ const onDragChange = async (event, newStatus) => {
   }
 };
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'To Do': return 'neutral';
+    case 'In Progress': return 'info';
+    case 'Review': return 'warning';
+    case 'Done': return 'success';
+    default: return 'neutral';
+  }
+};
+
+const getStatusClasses = (status) => {
+  switch (status) {
+    case 'To Do': return 'border-gray-500 text-gray-600 dark:text-gray-400';
+    case 'In Progress': return 'border-sky-500 text-sky-600 dark:text-sky-400';
+    case 'Review': return 'border-amber-500 text-amber-600 dark:text-amber-400';
+    case 'Done': return 'border-emerald-500 text-emerald-600 dark:text-emerald-400';
+    default: return 'border-gray-500 text-gray-600 dark:text-gray-400';
+  }
+};
+
 const getPriorityColor = (priority) => {
   switch (priority) {
-    case 'High': return 'red';
-    case 'Medium': return 'yellow';
-    case 'Low': return 'green';
-    default: return 'gray';
+    case 'High': return 'error';
+    case 'Medium': return 'warning';
+    case 'Low': return 'success';
+    default: return 'neutral';
   }
 };
 </script>
@@ -117,18 +137,19 @@ const getPriorityColor = (priority) => {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
         <div v-for="status in statuses" :key="status" class="flex flex-col gap-4">
-          <div class="flex items-center justify-between px-2">
-            <h2 class="font-semibold text-gray-500 uppercase text-sm tracking-wider">{{ status }}</h2>
-            <UBadge size="xs" color="neutral" variant="soft">{{ board[status]?.length || 0 }}</UBadge>
+          <div class="flex items-center justify-between px-2 py-1 border-b-2" :class="getStatusClasses(status)">
+            <h2 class="font-bold uppercase text-sm tracking-wider">{{ status }}</h2>
+            <UBadge size="xs" :color="getStatusColor(status)" variant="soft">{{ board[status]?.length || 0 }}</UBadge>
           </div>
 
           <draggable
             v-model="board[status]"
             group="tasks"
             item-key="id"
-            class="flex flex-col gap-4 min-h-[400px] bg-gray-50 dark:bg-anthrazit-light p-3 rounded-lg border border-gray-200 dark:border-gray-800"
+            class="flex flex-col gap-4 min-h-[150px] overflow-y-auto bg-gray-50 dark:bg-anthrazit-light p-3 rounded-lg border border-gray-200 dark:border-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+            :style="{ maxHeight: 'calc(100vh - 250px)' }"
             @change="onDragChange($event, status)"
           >
             <template #item="{ element: task }">
@@ -142,12 +163,14 @@ const getPriorityColor = (priority) => {
               >
                 <template #header>
                   <div class="flex justify-between items-start gap-2">
-                    <span class="font-medium text-sm line-clamp-2">{{ task.title }}</span>
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <span class="font-medium text-sm line-clamp-2">{{ task.title }}</span>
+                    </div>
                     <UDropdownMenu :items="[[
                       { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => openEditModal(task) },
                       { label: 'Delete', icon: 'i-lucide-trash', color: 'error', onSelect: () => deleteTask(task.id) }
                     ]]">
-                      <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis-vertical" size="xs" />
+                      <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis-vertical" size="xs" class="shrink-0" />
                     </UDropdownMenu>
                   </div>
                 </template>
@@ -158,14 +181,18 @@ const getPriorityColor = (priority) => {
 
                 <template #footer>
                   <div class="flex justify-between items-center">
-                    <UBadge :color="getPriorityColor(task.priority)" variant="subtle" size="xs">
-                      {{ task.priority }}
-                    </UBadge>
+                    <div class="flex gap-1">
+                      <UBadge :color="getPriorityColor(task.priority)" variant="subtle" size="xs">
+                        {{ task.priority }}
+                      </UBadge>
+                    </div>
                     
                     <USelect
                       :model-value="task.status"
                       :items="statuses"
                       size="xs"
+                      :color="getStatusColor(task.status)"
+                      variant="ghost"
                       @update:model-value="updateStatus(task, $event)"
                     />
                   </div>
@@ -204,10 +231,10 @@ const getPriorityColor = (priority) => {
 
               <div class="grid grid-cols-2 gap-4">
                 <UFormField label="Priority">
-                  <USelect v-model="currentTask.priority" :items="priorities" class="w-full" />
+                  <USelect v-model="currentTask.priority" :items="priorities" :color="getPriorityColor(currentTask.priority)" class="w-full" />
                 </UFormField>
                 <UFormField label="Status">
-                  <USelect v-model="currentTask.status" :items="statuses" class="w-full" />
+                  <USelect v-model="currentTask.status" :items="statuses" :color="getStatusColor(currentTask.status)" class="w-full" />
                 </UFormField>
               </div>
             </div>
